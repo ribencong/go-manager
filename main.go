@@ -20,14 +20,12 @@ var rootCmd = &cobra.Command{
 	//Args:  cobra.MinimumNArgs(2),
 }
 var param struct {
-	password      string
-	address       string
-	interval      int
-	startDay      string
-	bootStrapIP   string
-	bootStrapAddr string
-	kingKey       string
-	cipherText    string
+	password   string
+	address    string
+	interval   int
+	startDay   string
+	kingKey    string
+	cipherText string
 }
 
 func main() {
@@ -38,16 +36,7 @@ func main() {
 	}
 }
 
-var sysInitCmd = &cobra.Command{
-	Use:   "init",
-	Short: " YPManager init -p [password] -b [bootIP] -a [bootAddress].",
-	Long:  `TODO::.`,
-	Run:   initSys,
-}
-
 func init() {
-
-	rootCmd.AddCommand(sysInitCmd)
 
 	rootCmd.Flags().StringVarP(&param.password, "password",
 		"p", "", "Thanos's finger")
@@ -60,15 +49,6 @@ func init() {
 
 	rootCmd.Flags().IntVarP(&param.interval, "duration", "d", 0,
 		"license duration in days")
-
-	sysInitCmd.Flags().StringVarP(&param.password, "password",
-		"p", "", "Thanos's finger")
-
-	sysInitCmd.Flags().StringVarP(&param.bootStrapIP, "bootIP",
-		"i", "", "Boot strap server's IP")
-
-	sysInitCmd.Flags().StringVarP(&param.bootStrapAddr, "bootID",
-		"a", "", "Boot strap server's YouPipe account address")
 }
 
 func mainRun(_ *cobra.Command, _ []string) {
@@ -78,7 +58,6 @@ func mainRun(_ *cobra.Command, _ []string) {
 	if !account.CheckID(param.address) {
 		panic("user's address is invalid")
 	}
-	aid := account.ID(param.address)
 
 	start := time.Now()
 	if len(param.startDay) != 0 {
@@ -96,10 +75,6 @@ func mainRun(_ *cobra.Command, _ []string) {
 		panic("invalid duration no in days")
 	}
 
-	thanosFinger.Snap(aid, start, param.interval)
-}
-
-func initSys(_ *cobra.Command, _ []string) {
-	thanosFinger := OpenThanosFinger(param.password)
-	thanosFinger.CreateConfig(param.bootStrapIP, param.bootStrapAddr)
+	l := thanosFinger.Snap(param.address, start, param.interval)
+	fmt.Println(l)
 }

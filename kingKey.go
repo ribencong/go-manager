@@ -6,13 +6,13 @@ import (
 	"github.com/youpipe/go-youPipe/account"
 	"golang.org/x/crypto/ed25519"
 	"io/ioutil"
-	"net"
 	"time"
 )
 
 const (
-	ConfFile      = "finger.json"
-	SysTimeFormat = "2006-01-02"
+	ConfFile          = "finger.json"
+	SysTimeFormat     = "2006-01-02"
+	LicenseTimeFormat = "2006-01-02 15:04:05"
 
 	//debug
 	Address    = "YPDYo3TZsLMgTHF9Vmm9arAWZHAuPTyh8XdF4MzRcqUjuT"
@@ -24,10 +24,8 @@ const (
 )
 
 type SysConf struct {
-	BootStrapIP   string `json:"BootStrapIP"`
-	BootStrapAddr string `json:"BootStrapAddr"`
-	KingKey       string `json:"KingKey"`
-	CipherTxt     string `json:"CipherTxt"`
+	KingKey   string `json:"KingKey"`
+	CipherTxt string `json:"CipherTxt"`
 }
 
 type License struct {
@@ -38,6 +36,8 @@ type License struct {
 }
 
 type ThanosFinger ed25519.PrivateKey
+
+var SysConfig = &SysConf{}
 
 func OpenThanosFinger(password string) ThanosFinger {
 
@@ -56,36 +56,33 @@ func OpenThanosFinger(password string) ThanosFinger {
 		panic("You're not Thanos")
 	}
 
-	return ThanosFinger(acc.Key.PriKey)
-}
-
-func (tf ThanosFinger) Snap(id account.ID, startDay time.Time, duration int) {
-
-}
-
-func (tf ThanosFinger) CreateConfig(ip, addr string) {
-
-	if !account.CheckID(addr) {
-		panic("boot strap server's YouPipe node address is invalid")
-	}
-
-	if ipAddr := net.ParseIP(ip); ipAddr == nil {
-		panic("boot strap server's ip is invalid")
-	}
-
-	conf := SysConf{
-		BootStrapAddr: addr,
-		BootStrapIP:   ip,
-		KingKey:       Address,
-		CipherTxt:     CipherText,
-	}
-
-	data, err := json.Marshal(conf)
+	data, err := ioutil.ReadFile(ConfFile)
 	if err != nil {
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile(ConfFile, data, 0644); err != nil {
+	if err = json.Unmarshal(data, SysConfig); err != nil {
 		panic(err)
 	}
+
+	return ThanosFinger(acc.Key.PriKey)
+}
+
+func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) *License {
+
+	endTime := startDay.Add(time.Hour * 24 * time.Duration(duration))
+	l := &License{
+		StartTime: startDay.Format(LicenseTimeFormat),
+		EndTime:   endTime.Format(LicenseTimeFormat),
+		Address:   id,
+	}
+	data, err := json.Marshal(l)
+	if err != nil {
+		panic(err)
+	}
+
+	sig := ed25519.Sign(ed25519.PrivateKey(tf), data)
+	l.Signature = base58.Encode(sig)
+
+	return l
 }
