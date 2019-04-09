@@ -86,6 +86,9 @@ func mainRun(_ *cobra.Command, _ []string) {
 		if err != nil {
 			panic(err)
 		}
+		if s.Before(start) {
+			panic("start time is earlier than now.")
+		}
 		start = s
 	}
 

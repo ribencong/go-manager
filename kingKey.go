@@ -11,24 +11,37 @@ import (
 )
 
 const (
-	ConfFile      = ".finger"
+	ConfFile      = "finger.json"
 	SysTimeFormat = "2006-01-02"
-	Address       = "YP5rttHPzRsAe2RmF52sLzbBk4jpoPwJLtABaMv6qn7kVm"
-	CipherText    = "347FrZuRaDL7dKGeG1fWzZuf2irc3qtXjxpSn762uNxHi8wBjTDongteyLvNDykbnTcXKokvhnvV3kMmnMP1RSYjRUwaGLAGVpkdfkx6CQWKiq"
+
+	//debug
+	Address    = "YPDYo3TZsLMgTHF9Vmm9arAWZHAuPTyh8XdF4MzRcqUjuT"
+	CipherText = "ffHuPBsZ7mMZ5m6XDnv66kq2fobLe1TACc4MqKjSY3ELSrvxmTwvmf6tfGsJqXFRN1fKEHZw5dnqdiHw484HiEGkcVXDXNwQhgprQr59NAVoe"
+
+	//release
+	//Address       = "YP5rttHPzRsAe2RmF52sLzbBk4jpoPwJLtABaMv6qn7kVm"
+	//CipherText    = "347FrZuRaDL7dKGeG1fWzZuf2irc3qtXjxpSn762uNxHi8wBjTDongteyLvNDykbnTcXKokvhnvV3kMmnMP1RSYjRUwaGLAGVpkdfkx6CQWKiq"
 )
 
 type SysConf struct {
-	bootStrapIP   string
-	bootStrapAddr string
-	kingKey       string
-	cipherTxt     string
+	BootStrapIP   string `json:"BootStrapIP"`
+	BootStrapAddr string `json:"BootStrapAddr"`
+	KingKey       string `json:"KingKey"`
+	CipherTxt     string `json:"CipherTxt"`
+}
+
+type License struct {
+	Signature string `json:"signature"`
+	StartTime string `json:"start"`
+	EndTime   string `json:"end"`
+	Address   string `json:"user"`
 }
 
 type ThanosFinger ed25519.PrivateKey
 
 func OpenThanosFinger(password string) ThanosFinger {
 
-	if len(param.password) == 0 {
+	if len(password) == 0 {
 		panic("please input king's account password")
 	}
 
@@ -39,7 +52,7 @@ func OpenThanosFinger(password string) ThanosFinger {
 		},
 	}
 
-	if ok := acc.UnlockAcc(param.password); ok {
+	if ok := acc.UnlockAcc(password); !ok {
 		panic("You're not Thanos")
 	}
 
@@ -61,10 +74,10 @@ func (tf ThanosFinger) CreateConfig(ip, addr string) {
 	}
 
 	conf := SysConf{
-		bootStrapAddr: addr,
-		bootStrapIP:   ip,
-		kingKey:       Address,
-		cipherTxt:     CipherText,
+		BootStrapAddr: addr,
+		BootStrapIP:   ip,
+		KingKey:       Address,
+		CipherTxt:     CipherText,
 	}
 
 	data, err := json.Marshal(conf)
