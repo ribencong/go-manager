@@ -1,0 +1,2 @@
+# go-manager
+accountant manager
