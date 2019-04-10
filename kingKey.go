@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/skip2/go-qrcode"
+	"github.com/youpipe/go-manager/pbs"
 	"github.com/youpipe/go-youPipe/account"
 	"golang.org/x/crypto/ed25519"
 	"time"
@@ -20,13 +22,6 @@ const (
 	Address    = "YP5rttHPzRsAe2RmF52sLzbBk4jpoPwJLtABaMv6qn7kVm"
 	CipherText = "347FrZuRaDL7dKGeG1fWzZuf2irc3qtXjxpSn762uNxHi8wBjTDongteyLvNDykbnTcXKokvhnvV3kMmnMP1RSYjRUwaGLAGVpkdfkx6CQWKiq"
 )
-
-type License struct {
-	Signature string `json:"signature"`
-	StartTime string `json:"start"`
-	EndTime   string `json:"end"`
-	Address   string `json:"user"`
-}
 
 type ThanosFinger ed25519.PrivateKey
 
@@ -50,21 +45,32 @@ func OpenThanosFinger(password string) ThanosFinger {
 	return ThanosFinger(acc.Key.PriKey)
 }
 
-func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) *License {
+func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) string {
 
 	endTime := startDay.Add(time.Hour * 24 * time.Duration(duration))
-	l := &License{
+
+	ldata := &pbs.LicenseData{
 		StartTime: startDay.Format(LicenseTimeFormat),
 		EndTime:   endTime.Format(LicenseTimeFormat),
-		Address:   id,
+		UserAddr:  id,
 	}
-	data, err := json.Marshal(l)
+	data, err := json.Marshal(ldata)
 	if err != nil {
 		panic(err)
 	}
 
 	sig := ed25519.Sign(ed25519.PrivateKey(tf), data)
-	l.Signature = base58.Encode(sig)
 
-	return l
+	l := &pbs.License{
+		Data: ldata,
+		Sig:  sig,
+	}
+
+	data, err = json.Marshal(l)
+
+	err = qrcode.WriteFile(string(data), qrcode.Medium, 256, ldata.UserAddr+".png")
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
 }

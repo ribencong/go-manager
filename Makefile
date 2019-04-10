@@ -23,7 +23,11 @@ endif
 
 BINDIR=$(INCLUDE)/bin
 
+
 all: pbs  build
+
+pbs:
+	cd pbs/ && $(MAKE)
 
 build:
 	GOARCH=amd64 $(GOBUILD) -o $(BINDIR)/$(NAME)
