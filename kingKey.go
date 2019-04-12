@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/skip2/go-qrcode"
 	"github.com/youpipe/go-manager/pbs"
 	"github.com/youpipe/go-youPipe/account"
 	"golang.org/x/crypto/ed25519"
@@ -68,9 +67,9 @@ func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) string 
 
 	data, err = json.Marshal(l)
 
-	err = qrcode.WriteFile(string(data), qrcode.Medium, 256, ldata.UserAddr+".png")
-	if err != nil {
-		panic(err)
-	}
+	//err = qrcode.WriteFile(string(data), qrcode.Medium, 256, ldata.UserAddr+".png")
+	//if err != nil {
+	//	panic(err)
+	//}
 	return string(data)
 }
