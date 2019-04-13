@@ -3,20 +3,14 @@ package main
 import (
 	"encoding/json"
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/youpipe/go-manager/pbs"
 	"github.com/youpipe/go-youPipe/account"
+	"github.com/youpipe/go-youPipe/service"
 	"golang.org/x/crypto/ed25519"
 	"time"
 )
 
 const (
-	SysTimeFormat     = "2006-01-02"
-	LicenseTimeFormat = "2006-01-02 15:04:05"
-
-	//debug
-	//Address    = "YPDYo3TZsLMgTHF9Vmm9arAWZHAuPTyh8XdF4MzRcqUjuT"
-	//CipherText = "ffHuPBsZ7mMZ5m6XDnv66kq2fobLe1TACc4MqKjSY3ELSrvxmTwvmf6tfGsJqXFRN1fKEHZw5dnqdiHw484HiEGkcVXDXNwQhgprQr59NAVoe"
-
+	SysTimeFormat = "2006-01-02"
 	//release
 	Address    = "YP5rttHPzRsAe2RmF52sLzbBk4jpoPwJLtABaMv6qn7kVm"
 	CipherText = "347FrZuRaDL7dKGeG1fWzZuf2irc3qtXjxpSn762uNxHi8wBjTDongteyLvNDykbnTcXKokvhnvV3kMmnMP1RSYjRUwaGLAGVpkdfkx6CQWKiq"
@@ -48,28 +42,22 @@ func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) string 
 
 	endTime := startDay.Add(time.Hour * 24 * time.Duration(duration))
 
-	ldata := &pbs.LicenseData{
-		StartTime: startDay.Format(LicenseTimeFormat),
-		EndTime:   endTime.Format(LicenseTimeFormat),
+	data, err := json.Marshal(&service.LicenseContent{
+		StartDate: startDay,
+		EndDate:   endTime,
 		UserAddr:  id,
-	}
-	data, err := json.Marshal(ldata)
+	})
+
 	if err != nil {
 		panic(err)
 	}
 
 	sig := ed25519.Sign(ed25519.PrivateKey(tf), data)
-
-	l := &pbs.License{
-		Data: ldata,
-		Sig:  sig,
+	l := &service.License{
+		Signature: sig,
+		Content:   data,
 	}
 
 	data, err = json.Marshal(l)
-
-	//err = qrcode.WriteFile(string(data), qrcode.Medium, 256, ldata.UserAddr+".png")
-	//if err != nil {
-	//	panic(err)
-	//}
 	return string(data)
 }

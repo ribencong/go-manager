@@ -24,7 +24,7 @@ endif
 BINDIR=$(INCLUDE)/bin
 
 
-all: pbs  build
+all: build
 
 pbs:
 	cd pbs/ && $(MAKE)
