@@ -42,20 +42,20 @@ func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) string 
 
 	endTime := startDay.Add(time.Hour * 24 * time.Duration(duration))
 
-	data, err := json.Marshal(&service.LicenseContent{
+	content := &service.LicenseContent{
 		StartDate: startDay,
 		EndDate:   endTime,
 		UserAddr:  id,
-	})
-
+	}
+	data, err := json.Marshal(content)
 	if err != nil {
 		panic(err)
 	}
 
 	sig := ed25519.Sign(ed25519.PrivateKey(tf), data)
 	l := &service.License{
-		Signature: sig,
-		Content:   data,
+		Signature:      sig,
+		LicenseContent: content,
 	}
 
 	data, err = json.Marshal(l)
