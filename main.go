@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mr-tron/base58"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/spf13/cobra"
 	"github.com/youpipe/go-youPipe/account"
 	"os"
@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use: "YPManager",
 
-	Short: "YPManager -p [password] -a [address] -s [2006-02-21] -d 14",
+	Short: "YPManager -p [password] -u [address] -s [2006-02-21] -d 14",
 
 	Long: `""`,
 
