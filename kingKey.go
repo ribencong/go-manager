@@ -43,8 +43,8 @@ func (tf ThanosFinger) Snap(id string, startDay time.Time, duration int) string 
 	endTime := startDay.Add(time.Hour * 24 * time.Duration(duration))
 
 	content := &service.LicenseData{
-		StartDate: startDay,
-		EndDate:   endTime,
+		StartDate: service.JsonTime(startDay),
+		EndDate:   service.JsonTime(endTime),
 		UserAddr:  id,
 	}
 	data, err := json.Marshal(content)

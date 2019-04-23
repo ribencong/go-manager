@@ -5,6 +5,7 @@ import (
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/spf13/cobra"
 	"github.com/youpipe/go-youPipe/account"
+	"github.com/youpipe/go-youPipe/service"
 	"os"
 	"strings"
 	"time"
@@ -98,6 +99,9 @@ func mainRun(_ *cobra.Command, _ []string) {
 
 	l := thanosFinger.Snap(param.address, start, param.interval)
 	fmt.Println(l)
+	if _, err := service.ParseLicense(l); err != nil {
+		panic(err)
+	}
 }
 
 func bootStrapServers(_ *cobra.Command, _ []string) {
