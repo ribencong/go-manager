@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/youpipe/go-youPipe/account"
-	"github.com/youpipe/go-youPipe/service"
+	"github.com/ribencong/go-youPipe/account"
+	"github.com/ribencong/go-youPipe/service"
 	"golang.org/x/crypto/ed25519"
 	"time"
 )

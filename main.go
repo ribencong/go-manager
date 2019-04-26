@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/ribencong/go-youPipe/account"
+	"github.com/ribencong/go-youPipe/service"
 	"github.com/spf13/cobra"
-	"github.com/youpipe/go-youPipe/account"
-	"github.com/youpipe/go-youPipe/service"
 	"os"
 	"strings"
 	"time"
