@@ -81,7 +81,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 		panic("user's address is invalid")
 	}
 
-	start := time.Now()
+	start := time.Now().In(time.UTC)
 	if len(param.startDay) != 0 {
 		s, err := time.Parse(SysTimeFormat, param.startDay)
 		if err != nil {
