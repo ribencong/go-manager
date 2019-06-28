@@ -109,7 +109,7 @@ func bootStrapServers(_ *cobra.Command, _ []string) {
 		fmt.Println("No input")
 	}
 
-	nodeIds := strings.Split(bootServers, ";")
+	nodeIds := strings.Split(bootServers, ",")
 
 	for _, id := range nodeIds {
 		fmt.Println(base58.Encode([]byte(id)))
