@@ -69,9 +69,13 @@ func init() {
 
 	bootCmd.Flags().StringVarP(&bootServers, "server",
 		"s", "", "bootstrap server list")
+
+	bootCmd.Flags().StringVarP(&bootID, "decode",
+		"d", "", "decode node id to server id@ip")
 }
 
 var bootServers = ""
+var bootID = ""
 
 func mainRun(_ *cobra.Command, _ []string) {
 
@@ -105,13 +109,16 @@ func mainRun(_ *cobra.Command, _ []string) {
 }
 
 func bootStrapServers(_ *cobra.Command, _ []string) {
-	if len(bootServers) == 0 {
-		fmt.Println("No input")
+	if len(bootServers) != 0 {
+		nodeIds := strings.Split(bootServers, ",")
+
+		for _, id := range nodeIds {
+			fmt.Println(base58.Encode([]byte(id)))
+		}
 	}
 
-	nodeIds := strings.Split(bootServers, ",")
-
-	for _, id := range nodeIds {
-		fmt.Println(base58.Encode([]byte(id)))
+	if len(bootID) != 0 {
+		fmt.Println(string(base58.Decode(bootID)))
 	}
+
 }
