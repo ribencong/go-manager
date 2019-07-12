@@ -109,6 +109,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 }
 
 func bootStrapServers(_ *cobra.Command, _ []string) {
+
 	if len(bootServers) != 0 {
 		nodeIds := strings.Split(bootServers, ",")
 
